@@ -13,4 +13,8 @@ migrateup:
 migratedown:
 	migrate -path db/migration/ -database "postgres://root:aregbesola@127.0.0.1:15432/omnibank?sslmode=disable" -verbose down
 
-PHONY: startcont createdb dropdb migrateup migratedown
+sqlc:
+	sqlc generate
+
+
+PHONY: startcont createdb dropdb migrateup migratedown sqlc
