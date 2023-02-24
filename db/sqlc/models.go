@@ -5,7 +5,6 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -18,10 +17,10 @@ type Account struct {
 }
 
 type Transaction struct {
-	ID        int64         `json:"id"`
-	AccNumber sql.NullInt64 `json:"acc_number"`
-	Amount    int64         `json:"amount"`
-	Date      time.Time     `json:"date"`
+	ID        int64     `json:"id"`
+	AccNumber int64     `json:"acc_number"`
+	Amount    int64     `json:"amount"`
+	Date      time.Time `json:"date"`
 }
 
 type Transfer struct {

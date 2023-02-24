@@ -1,5 +1,8 @@
-startcont:
+runcont:
 	docker run -d --name bankpro -e POSTGRES_PASSWORD=aregbesola -e POSTGRES_USER=root -p 15432:5432 postgres
+
+startcont:
+	docker start bankpro
 
 createdb:
 	docker exec -it bankpro createdb --owner=root --username=root omnibank
@@ -19,4 +22,4 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-PHONY: startcont createdb dropdb migrateup migratedown sqlc test
+PHONY: startcont createdb dropdb migrateup migratedown sqlc test runcont

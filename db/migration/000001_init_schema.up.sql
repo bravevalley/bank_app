@@ -8,14 +8,14 @@ CREATE TABLE account(
 
 
 CREATE TABLE transactions(
-	id bigint primary key,
-	acc_number bigint,
+	id BIGSERIAL primary key,
+	acc_number bigint NOT NULL,
 	amount bigint NOT NULL,
 	date timestamptz NOT NULL default NOW()
 );
 
 CREATE TABLE transfers(
-	id bigint primary key,
+	id BIGSERIAL primary key,
 	amount bigint NOT NULL,
 	debit bigint NOT NULL,
 	credit bigint NOT NULL,

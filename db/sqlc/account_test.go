@@ -121,3 +121,26 @@ func TestUpdateAccount(t *testing.T) {
 	require.WithinDuration(t, newAcc.CreatedAt, acc.CreatedAt, time.Second)
 	
 }
+
+func TestListAccount(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		CreateAcc(t)
+	}
+
+	listEle := ListAccountParams{
+		Limit: 5,
+		Offset: 5,
+	}
+
+	xAcc, err := testQueries.ListAccount(context.Background(), listEle)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, xAcc)
+
+	require.Len(t, xAcc, 5)
+
+	for _, acc := range xAcc {
+		require.NotEmpty(t, acc)
+	}
+
+}

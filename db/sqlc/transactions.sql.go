@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const deleteAllTransactions = `-- name: DeleteAllTransactions :exec
@@ -15,7 +14,7 @@ DELETE FROM transactions
 WHERE acc_number = $1
 `
 
-func (q *Queries) DeleteAllTransactions(ctx context.Context, accNumber sql.NullInt64) error {
+func (q *Queries) DeleteAllTransactions(ctx context.Context, accNumber int64) error {
 	_, err := q.db.ExecContext(ctx, deleteAllTransactions, accNumber)
 	return err
 }
@@ -57,9 +56,9 @@ OFFSET $3
 `
 
 type ListAccTransactionsParams struct {
-	AccNumber sql.NullInt64 `json:"acc_number"`
-	Limit     int32         `json:"limit"`
-	Offset    int32         `json:"offset"`
+	AccNumber int64 `json:"acc_number"`
+	Limit     int32 `json:"limit"`
+	Offset    int32 `json:"offset"`
 }
 
 func (q *Queries) ListAccTransactions(ctx context.Context, arg ListAccTransactionsParams) ([]Transaction, error) {
@@ -100,8 +99,8 @@ RETURNING id, acc_number, amount, date
 `
 
 type NewTransactionParams struct {
-	AccNumber sql.NullInt64 `json:"acc_number"`
-	Amount    int64         `json:"amount"`
+	AccNumber int64 `json:"acc_number"`
+	Amount    int64 `json:"amount"`
 }
 
 func (q *Queries) NewTransaction(ctx context.Context, arg NewTransactionParams) (Transaction, error) {
