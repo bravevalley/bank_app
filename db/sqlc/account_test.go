@@ -98,27 +98,22 @@ func TestUpdateAccount(t *testing.T) {
 		Balance: utils.RandomAmount(),
 	}
 
-	err := testQueries.UpdateaAccountBal(context.Background(), want)
+	got, err := testQueries.UpdateaAccountBal(context.Background(), want)
 
 	// We want no error 
 	require.NoError(t, err)
 
-	acc, err := testQueries.GetAccount(context.Background(), want.AccNumber)
-
-	// Check for error - should not return any errors
-	require.NoError(t, err)
-
 	// The return account should not be empty
-	require.NotEmpty(t, acc)
+	require.NotEmpty(t, got)
 	
 	// All entries should be returned
-	require.Equal(t, want.AccNumber, acc.AccNumber)
-	require.Equal(t, newAcc.Name, acc.Name)
-	require.Equal(t, want.Balance, acc.Balance)
-	require.Equal(t, newAcc.Currency, acc.Currency)
+	require.Equal(t, want.AccNumber, got.AccNumber)
+	require.Equal(t, newAcc.Name, got.Name)
+	require.Equal(t, want.Balance, got.Balance)
+	require.Equal(t, newAcc.Currency, got.Currency)
 
 	// Check if the time recorded is within the same second
-	require.WithinDuration(t, newAcc.CreatedAt, acc.CreatedAt, time.Second)
+	require.WithinDuration(t, newAcc.CreatedAt, got.CreatedAt, time.Second)
 	
 }
 

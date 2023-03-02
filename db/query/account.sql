@@ -10,16 +10,22 @@ RETURNING *;
 SELECT * FROM account
 WHERE acc_number = $1 LIMIT 1;
 
+-- name: GetAccountForUpdate :one
+SELECT * FROM account
+WHERE acc_number = $1 LIMIT 1
+FOR NO KEY UPDATE;
+
 -- name: ListAccount :many
 SELECT * FROM account
 ORDER BY name
 LIMIT $1
 OFFSET $2;
 
--- name: UpdateaAccountBal :exec
+-- name: UpdateaAccountBal :one
 UPDATE account 
 SET balance = $2
-WHERE acc_number = $1;
+WHERE acc_number = $1
+RETURNING *;
 
 -- name: DeleteAccount :exec
 DELETE FROM account

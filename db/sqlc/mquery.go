@@ -71,7 +71,7 @@ type SuccessfulTransferResult struct{
 // execTransferTx executes the Transfer transaction, it contains the transfer process prepare for the transfer Tx which includes creating a transfer record, a transaction record for both the sender and receiver and update their acccount ball
 func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
 	var result SuccessfulTransferResult
-	
+
 	err := m.executeTx(ctx, func(q *Queries) error {
 		var err error
 
@@ -105,6 +105,34 @@ func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (Su
 
 		//TODO: Update account balance
 
+		Debit, err := q.GetAccountForUpdate(context.Background(), arg.Debit)
+		if err != nil {
+			return err
+		}
+
+		result.SenderAcc, err = q.UpdateaAccountBal(context.Background(), UpdateaAccountBalParams{
+			AccNumber: arg.Debit,
+			Balance: Debit.Balance - arg.Amount,
+		})
+
+		if err != nil {
+			return err
+		}
+
+
+		Credit, err := q.GetAccountForUpdate(context.Background(), arg.Credit)
+		if err != nil {
+			return err
+		}
+
+		result.ReceiverAcc, err = q.UpdateaAccountBal(context.Background(), UpdateaAccountBalParams{
+			AccNumber: arg.Credit,
+			Balance: Credit.Balance + arg.Amount,
+		})
+
+		if err != nil {
+			return err
+		}
 
 
 		return nil
