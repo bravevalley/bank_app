@@ -103,37 +103,24 @@ func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (Su
 			return err
 		}
 
-		//TODO: Update account balance
-
-		Debit, err := q.GetAccountForUpdate(context.Background(), arg.Debit)
-		if err != nil {
-			return err
-		}
-
-		result.SenderAcc, err = q.UpdateaAccountBal(context.Background(), UpdateaAccountBalParams{
+		result.SenderAcc, err = q.AddAccountBal(context.Background(), AddAccountBalParams{
+			Amount: -arg.Amount,
 			AccNumber: arg.Debit,
-			Balance: Debit.Balance - arg.Amount,
 		})
 
 		if err != nil {
 			return err
 		}
-
-
-		Credit, err := q.GetAccountForUpdate(context.Background(), arg.Credit)
-		if err != nil {
-			return err
-		}
-
-		result.ReceiverAcc, err = q.UpdateaAccountBal(context.Background(), UpdateaAccountBalParams{
+		
+		
+		result.ReceiverAcc, err = q.AddAccountBal(context.Background(), AddAccountBalParams{
+			Amount: arg.Amount,
 			AccNumber: arg.Credit,
-			Balance: Credit.Balance + arg.Amount,
 		})
 
 		if err != nil {
 			return err
 		}
-
 
 		return nil
 	})

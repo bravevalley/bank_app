@@ -27,6 +27,12 @@ SET balance = $2
 WHERE acc_number = $1
 RETURNING *;
 
+-- name: AddAccountBal :one
+UPDATE account 
+SET balance = balance + @amount
+WHERE acc_number = @acc_number
+RETURNING *;
+
 -- name: DeleteAccount :exec
 DELETE FROM account
 WHERE acc_number = $1;
