@@ -14,12 +14,10 @@ func init() {
 	rdm = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-
 // rdmNumbBtwRange return a random number within the range
 func rdmNumbBtwRange(min, max int64) int64 {
-	return min + rdm.Int63n(max - min + 1)
+	return min + rdm.Int63n(max-min+1)
 }
-
 
 // rdmstring returns a random collection of strings
 func rdmString(length int) string {

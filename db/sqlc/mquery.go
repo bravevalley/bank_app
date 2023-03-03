@@ -12,12 +12,11 @@ type msQ struct {
 	db *sql.DB
 }
 
-
 // NewMasterQuery returns a new *msQ for use
 func NewMasterQuery(db *sql.DB) *msQ {
 	return &msQ{
 		Queries: New(db),
-		db: db,
+		db:      db,
 	}
 }
 
@@ -39,7 +38,7 @@ func (m *msQ) executeTx(ctx context.Context, fn func(q *Queries) error) error {
 	// Check for error
 	if err != nil {
 		// Check if there is a rollback error
-		if rollbackErr:= Tx.Rollback(); rollbackErr != nil {
+		if rollbackErr := Tx.Rollback(); rollbackErr != nil {
 			return fmt.Errorf("Base err: %v;\nRollback Error: %v", err, rollbackErr)
 		}
 
@@ -48,25 +47,23 @@ func (m *msQ) executeTx(ctx context.Context, fn func(q *Queries) error) error {
 
 	// Check if there is a commit error
 	return Tx.Commit()
-} 
-
+}
 
 // Transfer process parameters
-type TransferProcessParams struct{
+type TransferProcessParams struct {
 	Debit  int64 `json:"debit"`
 	Credit int64 `json:"credit"`
 	Amount int64 `json:"amount"`
 }
 
 // Output structs of the database Transaction
-type SuccessfulTransferResult struct{
-	Transfer Transfer `json:"Transfer"`
-	SenderAcc Account `json:"SenderAcc"`
-	ReceiverAcc Account `json:"ReceiverAcc"`
-	SenderTransaction Transaction `json:"SenderTransaction"`
+type SuccessfulTransferResult struct {
+	Transfer            Transfer    `json:"Transfer"`
+	SenderAcc           Account     `json:"SenderAcc"`
+	ReceiverAcc         Account     `json:"ReceiverAcc"`
+	SenderTransaction   Transaction `json:"SenderTransaction"`
 	ReceiverTransaction Transaction `json:"ReceiverTransaction"`
 }
-
 
 // execTransferTx executes the Transfer transaction, it contains the transfer process prepare for the transfer Tx which includes creating a transfer record, a transaction record for both the sender and receiver and update their acccount ball
 func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
@@ -77,7 +74,7 @@ func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (Su
 
 		result.Transfer, err = q.NewTransfer(context.Background(), NewTransferParams{
 			Amount: arg.Amount,
-			Debit: arg.Debit,
+			Debit:  arg.Debit,
 			Credit: arg.Credit,
 		})
 
@@ -87,44 +84,58 @@ func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (Su
 
 		result.SenderTransaction, err = q.NewTransaction(ctx, NewTransactionParams{
 			AccNumber: arg.Debit,
-			Amount: -arg.Amount,
+			Amount:    -arg.Amount,
 		})
 
 		if err != nil {
 			return err
 		}
-		
+
 		result.ReceiverTransaction, err = q.NewTransaction(ctx, NewTransactionParams{
 			AccNumber: arg.Credit,
-			Amount: arg.Amount,
+			Amount:    arg.Amount,
 		})
 
 		if err != nil {
 			return err
 		}
 
-		result.SenderAcc, err = q.AddAccountBal(context.Background(), AddAccountBalParams{
-			Amount: -arg.Amount,
-			AccNumber: arg.Debit,
-		})
+		if arg.Credit < arg.Debit {
+			result.SenderAcc, result.ReceiverAcc, err = UpdateTheBal(q, ctx, arg.Credit, arg.Amount, arg.Debit, -arg.Amount)
 
-		if err != nil {
-			return err
-		}
-		
-		
-		result.ReceiverAcc, err = q.AddAccountBal(context.Background(), AddAccountBalParams{
-			Amount: arg.Amount,
-			AccNumber: arg.Credit,
-		})
+			if err != nil {
+				return err
+			}
+		} else {
+			result.SenderAcc, result.ReceiverAcc, err = UpdateTheBal(q, ctx, arg.Debit, -arg.Amount, arg.Credit, arg.Amount)
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
 	})
-	
 
 	return result, err
+}
+
+
+func UpdateTheBal(q *Queries, ctx context.Context, account1, amount1, account2, amount2 int64) (Acc1 Account, Acc2 Account, err error) {
+	Acc1, err = q.AddAccountBal(ctx, AddAccountBalParams{
+		Amount: amount1,
+		AccNumber: account1,
+	})
+
+	if err != nil {
+		return 
+	}
+
+
+	Acc2, err = q.AddAccountBal(ctx, AddAccountBalParams{
+		Amount: amount2,
+		AccNumber: account2,
+	})
+
+	return
 }

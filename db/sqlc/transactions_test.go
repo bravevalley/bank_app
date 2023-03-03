@@ -54,9 +54,9 @@ func createMultipleTransations(t *testing.T) []Transaction {
 	for i := 0; i < 10; i++ {
 		nwTranz := NewTransactionParams{
 			AccNumber: persistAcc,
-			Amount: utils.RandomAmount(),
+			Amount:    utils.RandomAmount(),
 		}
-		
+
 		createdTranz, err := testQueries.NewTransaction(context.Background(), nwTranz)
 
 		// We do no want errors
@@ -96,7 +96,7 @@ func TestGetTransaction(t *testing.T) {
 
 	// The return account should not be empty
 	require.NotEmpty(t, tran)
-	
+
 	// All entries should be returned
 	require.Equal(t, newTranzaction.AccNumber, tran.AccNumber)
 	require.Equal(t, newTranzaction.Amount, tran.Amount)
@@ -110,7 +110,7 @@ func TestUpdateTransaction(t *testing.T) {
 	tranz := createTransaction(t)
 
 	want := UpdateaTransactionParams{
-		ID: tranz.ID,
+		ID:     tranz.ID,
 		Amount: 400,
 	}
 
@@ -124,7 +124,7 @@ func TestUpdateTransaction(t *testing.T) {
 
 	// The return account should not be empty
 	require.NotEmpty(t, got)
-	
+
 	// All entries should be returned
 	require.Equal(t, tranz.AccNumber, got.AccNumber)
 	require.Equal(t, want.Amount, got.Amount)
@@ -143,7 +143,7 @@ func TestDeleteTransaction(t *testing.T) {
 
 	// Check for error - should return any errors
 	require.Error(t, err)
-	
+
 	// Check if the query retured a value - Must be empty
 	require.Empty(t, got)
 
@@ -158,8 +158,8 @@ func TestListAllAccTransaction(t *testing.T) {
 
 	q := ListAccTransactionsParams{
 		AccNumber: xTran[0].AccNumber,
-		Limit: 5,
-		Offset: 5,
+		Limit:     5,
+		Offset:    5,
 	}
 
 	// List the transaction gotten for the account number
@@ -173,8 +173,8 @@ func TestListAllAccTransaction(t *testing.T) {
 
 	// Check the number of transactions returned - must be 5
 	require.Len(t, xTranFromAcc, 5)
-	
-	for _, v := range xTranFromAcc{
+
+	for _, v := range xTranFromAcc {
 		require.NotEmpty(t, v)
 	}
 }

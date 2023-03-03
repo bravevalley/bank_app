@@ -14,8 +14,8 @@ import (
 func CreateAcc(t *testing.T) Account {
 	// Create the expected DB entry
 	want := CreateAccountParams{
-		Name: utils.RandomName(),
-		Balance: utils.RandomAmount(),
+		Name:     utils.RandomName(),
+		Balance:  utils.RandomAmount(),
 		Currency: utils.RdnCurr(),
 	}
 
@@ -27,12 +27,12 @@ func CreateAcc(t *testing.T) Account {
 
 	// The return account should not be empty
 	require.NotEmpty(t, acc)
-	
+
 	// All entries should be returned
 	require.Equal(t, want.Name, acc.Name)
 	require.Equal(t, want.Balance, acc.Balance)
 	require.Equal(t, want.Currency, acc.Currency)
-	
+
 	// An Account number should be automatically generated
 	require.NotZero(t, acc.AccNumber)
 
@@ -58,7 +58,7 @@ func TestGetAccount(t *testing.T) {
 
 	// The return account should not be empty
 	require.NotEmpty(t, acc)
-	
+
 	// All entries should be returned
 	require.Equal(t, want.AccNumber, acc.AccNumber)
 	require.Equal(t, want.Name, acc.Name)
@@ -95,17 +95,17 @@ func TestUpdateAccount(t *testing.T) {
 
 	want := UpdateaAccountBalParams{
 		AccNumber: newAcc.AccNumber,
-		Balance: utils.RandomAmount(),
+		Balance:   utils.RandomAmount(),
 	}
 
 	got, err := testQueries.UpdateaAccountBal(context.Background(), want)
 
-	// We want no error 
+	// We want no error
 	require.NoError(t, err)
 
 	// The return account should not be empty
 	require.NotEmpty(t, got)
-	
+
 	// All entries should be returned
 	require.Equal(t, want.AccNumber, got.AccNumber)
 	require.Equal(t, newAcc.Name, got.Name)
@@ -114,7 +114,7 @@ func TestUpdateAccount(t *testing.T) {
 
 	// Check if the time recorded is within the same second
 	require.WithinDuration(t, newAcc.CreatedAt, got.CreatedAt, time.Second)
-	
+
 }
 
 func TestListAccount(t *testing.T) {
@@ -123,7 +123,7 @@ func TestListAccount(t *testing.T) {
 	}
 
 	listEle := ListAccountParams{
-		Limit: 5,
+		Limit:  5,
 		Offset: 5,
 	}
 
