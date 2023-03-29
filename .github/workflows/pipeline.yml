@@ -23,6 +23,12 @@ jobs:
     - name: Move code to runner
       uses: actions/checkout@v3
 
+    - name: Create Go Migrate
+      run: |
+        curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-arm64.tar.gz   | tar xvz
+        sudo mv migrate /bin/
+        which migrate
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
