@@ -6,22 +6,22 @@ import (
 	"fmt"
 )
 
-// type msQ 'MasterQuery' extends the functionality of *Queries
-type msQ struct {
+// type MsQ 'MasterQuery' extends the functionality of *Queries
+type MsQ struct {
 	*Queries
 	db *sql.DB
 }
 
-// NewMasterQuery returns a new *msQ for use
-func NewMasterQuery(db *sql.DB) *msQ {
-	return &msQ{
+// NewMasterQuery returns a new *MsQ for use
+func NewMasterQuery(db *sql.DB) *MsQ {
+	return &MsQ{
 		Queries: New(db),
 		db:      db,
 	}
 }
 
 // executeTx creates and executes Database Transactions
-func (m *msQ) executeTx(ctx context.Context, fn func(q *Queries) error) error {
+func (m *MsQ) executeTx(ctx context.Context, fn func(q *Queries) error) error {
 
 	// create a new type *sql.Tx
 	Tx, err := m.db.BeginTx(ctx, nil)
@@ -66,7 +66,7 @@ type SuccessfulTransferResult struct {
 }
 
 // execTransferTx executes the Transfer transaction, it contains the transfer process prepare for the transfer Tx which includes creating a transfer record, a transaction record for both the sender and receiver and update their acccount ball
-func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
+func (m *MsQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
 	var result SuccessfulTransferResult
 
 	err := m.executeTx(ctx, func(q *Queries) error {
@@ -120,20 +120,18 @@ func (m *msQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (Su
 	return result, err
 }
 
-
 func UpdateTheBal(q *Queries, ctx context.Context, account1, amount1, account2, amount2 int64) (Acc1 Account, Acc2 Account, err error) {
 	Acc1, err = q.AddAccountBal(ctx, AddAccountBalParams{
-		Amount: amount1,
+		Amount:    amount1,
 		AccNumber: account1,
 	})
 
 	if err != nil {
-		return 
+		return
 	}
 
-
 	Acc2, err = q.AddAccountBal(ctx, AddAccountBalParams{
-		Amount: amount2,
+		Amount:    amount2,
 		AccNumber: account2,
 	})
 

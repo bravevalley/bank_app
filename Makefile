@@ -22,4 +22,7 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-PHONY: startcont createdb dropdb migrateup migratedown sqlc test runcont
+server:
+	go run .
+
+PHONY: startcont createdb dropdb migrateup migratedown sqlc test runcont server

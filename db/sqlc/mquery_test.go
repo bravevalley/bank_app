@@ -116,7 +116,6 @@ func TestTransferTx(t *testing.T) {
 
 }
 
-
 func TestTransferFuncTx(t *testing.T) {
 	masterQuery := NewMasterQuery(TestDB)
 
