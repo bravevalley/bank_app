@@ -18,6 +18,8 @@ func NewServer(masterQ *db.MsQ) *Server {
 	router := gin.Default()
 
 	router.POST("/accounts", server.createAccount)
+	router.GET("/accounts/:id", server.getAccountByID)
+	router.GET("/accounts", server.listAccounts)
 
 	server.Router = router
 	return server
