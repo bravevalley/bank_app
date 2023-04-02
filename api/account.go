@@ -65,7 +65,7 @@ func (server *Server) getAccountByID(gc *gin.Context) {
 
 type listAccountsParams struct {
 	PageNumber int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageSize   int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
 func (server *Server) listAccounts(gc *gin.Context) {
@@ -77,8 +77,8 @@ func (server *Server) listAccounts(gc *gin.Context) {
 	}
 
 	xaccounts, err := server.MasterQuery.ListAccount(gc, db.ListAccountParams{
-		Limit: listAcc.PageSize,
-		Offset:(listAcc.PageNumber - 1) * listAcc.PageSize,
+		Limit:  listAcc.PageSize,
+		Offset: (listAcc.PageNumber - 1) * listAcc.PageSize,
 	})
 
 	if err != nil {

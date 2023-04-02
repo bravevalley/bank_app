@@ -6,18 +6,19 @@ import (
 
 	"github.com/dassyareg/bank_app/api"
 	db "github.com/dassyareg/bank_app/db/sqlc"
+	"github.com/dassyareg/bank_app/utils"
 	_ "github.com/jackc/pgx/stdlib"
 )
 
-const (
-	dbDriver = "pgx"
-	dbSource = "postgres://root:aregbesola@127.0.0.1:15432/omnibank?sslmode=disable"
-	address  = "0.0.0.0:8080"
-)
+var err error
 
 func main() {
+	config, err := utils.LoadConfig(".")
+	if err != nil {
+		log.Fatal("Could not load config file ", err)
+	}
 
-	conn, err := sql.Open(dbDriver, dbSource)
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("Could not connect database!")
 	}
@@ -26,7 +27,7 @@ func main() {
 
 	server := api.NewServer(masterQ)
 
-	err = server.Start(address)
+	err = server.Start(config.Address)
 	if err != nil {
 		log.Fatal("Cant start server")
 	}
