@@ -6,22 +6,27 @@ import (
 	"fmt"
 )
 
-// type MsQ 'MasterQuery' extends the functionality of *Queries
-type MsQ struct {
+type MsQ interface {
+	execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error)
+	Querier
+}
+
+// type MsSQL 'MasterQuery' extends the functionality of *Queries
+type MsSQL struct {
 	*Queries
 	db *sql.DB
 }
 
-// NewMasterQuery returns a new *MsQ for use
-func NewMasterQuery(db *sql.DB) *MsQ {
-	return &MsQ{
+// NewMasterQuery returns a new *MsSQL for use
+func NewMasterQuery(db *sql.DB) *MsSQL {
+	return &MsSQL{
 		Queries: New(db),
 		db:      db,
 	}
 }
 
 // executeTx creates and executes Database Transactions
-func (m *MsQ) executeTx(ctx context.Context, fn func(q *Queries) error) error {
+func (m *MsSQL) executeTx(ctx context.Context, fn func(q *Queries) error) error {
 
 	// create a new type *sql.Tx
 	Tx, err := m.db.BeginTx(ctx, nil)
@@ -66,7 +71,7 @@ type SuccessfulTransferResult struct {
 }
 
 // execTransferTx executes the Transfer transaction, it contains the transfer process prepare for the transfer Tx which includes creating a transfer record, a transaction record for both the sender and receiver and update their acccount ball
-func (m *MsQ) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
+func (m *MsSQL) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
 	var result SuccessfulTransferResult
 
 	err := m.executeTx(ctx, func(q *Queries) error {

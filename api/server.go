@@ -6,11 +6,11 @@ import (
 )
 
 type Server struct {
-	MasterQuery *db.MsQ
+	MasterQuery db.MsQ
 	Router      *gin.Engine
 }
 
-func NewServer(masterQ *db.MsQ) *Server {
+func NewServer(masterQ db.MsQ) *Server {
 	server := &Server{
 		MasterQuery: masterQ,
 	}
