@@ -21,7 +21,7 @@ func TestTransferTx(t *testing.T) {
 
 	for i := 0; i < routines; i++ {
 		go func() {
-			result, err := masterQuery.execTransferTx(context.Background(), TransferProcessParams{
+			result, err := masterQuery.ExecTransferTx(context.Background(), TransferProcessParams{
 				Debit:  account1.AccNumber,
 				Credit: account2.AccNumber,
 				Amount: amount,
@@ -137,7 +137,7 @@ func TestTransferFuncTx(t *testing.T) {
 		}
 
 		go func() {
-			_, err := masterQuery.execTransferTx(context.Background(), TransferProcessParams{
+			_, err := masterQuery.ExecTransferTx(context.Background(), TransferProcessParams{
 				Debit:  sender,
 				Credit: receiver,
 				Amount: amount,

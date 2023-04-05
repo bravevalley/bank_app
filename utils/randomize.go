@@ -15,7 +15,7 @@ func init() {
 }
 
 // rdmNumbBtwRange return a random number within the range
-func rdmNumbBtwRange(min, max int64) int64 {
+func RdmNumbBtwRange(min, max int64) int64 {
 	return min + rdm.Int63n(max-min+1)
 }
 
@@ -41,7 +41,7 @@ func RandomName() string {
 
 // RandomAmount returns a random amount of money
 func RandomAmount() int64 {
-	return rdmNumbBtwRange(1, 1000)
+	return RdmNumbBtwRange(1, 1000)
 }
 
 // RdmCurr returns a ramdom currency

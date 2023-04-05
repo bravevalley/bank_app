@@ -7,8 +7,8 @@ import (
 )
 
 type MsQ interface {
-	execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error)
 	Querier
+	ExecTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error)
 }
 
 // type MsSQL 'MasterQuery' extends the functionality of *Queries
@@ -71,7 +71,7 @@ type SuccessfulTransferResult struct {
 }
 
 // execTransferTx executes the Transfer transaction, it contains the transfer process prepare for the transfer Tx which includes creating a transfer record, a transaction record for both the sender and receiver and update their acccount ball
-func (m *MsSQL) execTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
+func (m *MsSQL) ExecTransferTx(ctx context.Context, arg TransferProcessParams) (SuccessfulTransferResult, error) {
 	var result SuccessfulTransferResult
 
 	err := m.executeTx(ctx, func(q *Queries) error {

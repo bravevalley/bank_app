@@ -25,4 +25,7 @@ test:
 server:
 	go run .
 
-PHONY: startcont createdb dropdb migrateup migratedown sqlc test runcont server
+mock:
+	mockgen -package mockdb -destination db/mocks/mock.go github.com/dassyareg/bank_app/db/sqlc MsQ
+
+PHONY: startcont createdb dropdb migrateup migratedown sqlc test runcont server mock

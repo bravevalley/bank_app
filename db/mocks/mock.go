@@ -135,6 +135,21 @@ func (mr *MockMsQMockRecorder) DeleteTransfer(arg0, arg1 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTransfer", reflect.TypeOf((*MockMsQ)(nil).DeleteTransfer), arg0, arg1)
 }
 
+// ExecTransferTx mocks base method.
+func (m *MockMsQ) ExecTransferTx(arg0 context.Context, arg1 db.TransferProcessParams) (db.SuccessfulTransferResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExecTransferTx", arg0, arg1)
+	ret0, _ := ret[0].(db.SuccessfulTransferResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExecTransferTx indicates an expected call of ExecTransferTx.
+func (mr *MockMsQMockRecorder) ExecTransferTx(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecTransferTx", reflect.TypeOf((*MockMsQ)(nil).ExecTransferTx), arg0, arg1)
+}
+
 // GetAccount mocks base method.
 func (m *MockMsQ) GetAccount(arg0 context.Context, arg1 int64) (db.Account, error) {
 	m.ctrl.T.Helper()
@@ -297,19 +312,4 @@ func (m *MockMsQ) UpdateaTransaction(arg0 context.Context, arg1 db.UpdateaTransa
 func (mr *MockMsQMockRecorder) UpdateaTransaction(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateaTransaction", reflect.TypeOf((*MockMsQ)(nil).UpdateaTransaction), arg0, arg1)
-}
-
-// execTransferTx mocks base method.
-func (m *MockMsQ) execTransferTx(arg0 context.Context, arg1 db.TransferProcessParams) (db.SuccessfulTransferResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "execTransferTx", arg0, arg1)
-	ret0, _ := ret[0].(db.SuccessfulTransferResult)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// execTransferTx indicates an expected call of execTransferTx.
-func (mr *MockMsQMockRecorder) execTransferTx(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "execTransferTx", reflect.TypeOf((*MockMsQ)(nil).execTransferTx), arg0, arg1)
 }
