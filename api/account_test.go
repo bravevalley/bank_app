@@ -213,18 +213,103 @@ func TestCreateAccount(t *testing.T) {
 
 
 func TestListAccounts(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+        defer mockCtrl.Finish()
+	msQ := mock.NewMockMsQ(mockCtrl)
+
+	var xacc []db.Account
+
+
+	fakes := 5
+
+	for i := 0; i < fakes; i++ {
+		xacc = append(xacc, randomAccount())
+	}
+
 	testCases := []struct {
-		desc	string
+		Name string
+		Input listAccountsParams
+		Stub func (m *mock.MockMsQ)
+		Expected func(t *testing.T, res *httptest.ResponseRecorder)
 		
 	}{
 		{
-			desc: "",
+			Name: "List account",
+			Input: listAccountsParams{
+				PageNumber: 1,
+				PageSize: 5,
+			},
+			Stub: func(m *mockdb.MockMsQ) {
+				m.EXPECT().ListAccount(gomock.Any(), gomock.Eq(db.ListAccountParams{
+					Limit: 5,
+					Offset: 0,
+				})).Times(1).Return(xacc, nil)
+			},
+			Expected: func(t *testing.T, res *httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusOK)
+
+				var gotxAcc []db.Account
+
+				data, err := io.ReadAll(res.Body)
+				require.NoError(t, err)
+
+				err = json.Unmarshal(data, &gotxAcc)
+				require.NoError(t, err)
+
+				require.Equal(t, xacc, gotxAcc)
+			},
+			
+		},
+		{
+			Name: "Internal Server Error",
+			Input: listAccountsParams{
+				PageNumber: 1,
+				PageSize: 5,
+			},
+			Stub: func(m *mockdb.MockMsQ) {
+				m.EXPECT().ListAccount(gomock.Any(), gomock.Eq(db.ListAccountParams{
+					Limit: 5,
+					Offset: 0,
+				})).Times(1).Return([]db.Account{}, sql.ErrConnDone)
+			},
+			Expected: func(t *testing.T, res *httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusInternalServerError)
+			},
+			
+		},
+		{
+			Name: "Bad Request",
+			Input: listAccountsParams{
+				PageNumber: 1,
+				PageSize: 200,
+			},
+			Stub: func(m *mockdb.MockMsQ) {
+				m.EXPECT().ListAccount(gomock.Any(), gomock.Eq(db.ListAccountParams{
+					Limit: 5,
+					Offset: 0,
+				})).Times(0)
+			},
+			Expected: func(t *testing.T, res *httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusBadRequest)
+			},
 			
 		},
 	}
 	for _, tC := range testCases {
-		t.Run(tC.desc, func(t *testing.T) {
-			
+		t.Run(tC.Name, func(t *testing.T) {
+			tC.Stub(msQ)
+
+			server := NewServer(msQ)
+
+			url := fmt.Sprintf("/accounts?page_id=%d&page_size=%d", tC.Input.PageNumber, tC.Input.PageSize)
+
+			req := httptest.NewRequest(http.MethodGet, url, nil)
+			res := httptest.NewRecorder()
+
+			server.Router.ServeHTTP(res, req)
+
+			tC.Expected(t, res)
+
 		})
 	}
 }
