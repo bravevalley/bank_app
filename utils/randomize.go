@@ -46,7 +46,7 @@ func RandomAmount() int64 {
 
 // RdmCurr returns a ramdom currency
 func RdnCurr() string {
-	xCurr := []string{"NGN", "USD", "YEN"}
+	xCurr := []string{"NGN", "USD",}
 
 	return xCurr[rdm.Intn(len(xCurr))]
 }
