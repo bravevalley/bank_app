@@ -120,10 +120,10 @@ func TestCreateAccount(t *testing.T) {
 	}
 
 	account := db.Account{
-		Name: utils.RandomName(),
+		Name:      utils.RandomName(),
 		AccNumber: utils.RdmNumbBtwRange(1, 500),
-		Balance: 0,
-		Currency: utils.RdnCurr(),
+		Balance:   0,
+		Currency:  utils.RdnCurr(),
 	}
 
 	mockCtrl := gomock.NewController(t)
@@ -145,8 +145,8 @@ func TestCreateAccount(t *testing.T) {
 			},
 			Stub: func(m *mock.MockMsQ) {
 				m.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(db.CreateAccountParams{
-					Name: account.Name, 
-					Balance: account.Balance, 
+					Name:     account.Name,
+					Balance:  account.Balance,
 					Currency: account.Currency,
 				})).Times(1).Return(account, nil)
 			},
@@ -163,8 +163,8 @@ func TestCreateAccount(t *testing.T) {
 			},
 			Stub: func(m *mock.MockMsQ) {
 				m.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(db.CreateAccountParams{
-					Name: account.Name, 
-					Balance: account.Balance, 
+					Name:     account.Name,
+					Balance:  account.Balance,
 					Currency: account.Currency,
 				})).Times(1).Return(db.Account{}, sql.ErrConnDone)
 			},
@@ -180,8 +180,8 @@ func TestCreateAccount(t *testing.T) {
 			},
 			Stub: func(m *mock.MockMsQ) {
 				m.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(db.CreateAccountParams{
-					Name: account.Name, 
-					Balance: account.Balance, 
+					Name:     account.Name,
+					Balance:  account.Balance,
 					Currency: account.Currency,
 				})).Times(0)
 			},
@@ -211,14 +211,12 @@ func TestCreateAccount(t *testing.T) {
 	}
 }
 
-
 func TestListAccounts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
-        defer mockCtrl.Finish()
+	defer mockCtrl.Finish()
 	msQ := mock.NewMockMsQ(mockCtrl)
 
 	var xacc []db.Account
-
 
 	fakes := 5
 
@@ -227,21 +225,20 @@ func TestListAccounts(t *testing.T) {
 	}
 
 	testCases := []struct {
-		Name string
-		Input listAccountsParams
-		Stub func (m *mock.MockMsQ)
+		Name     string
+		Input    listAccountsParams
+		Stub     func(m *mock.MockMsQ)
 		Expected func(t *testing.T, res *httptest.ResponseRecorder)
-		
 	}{
 		{
 			Name: "List account",
 			Input: listAccountsParams{
 				PageNumber: 1,
-				PageSize: 5,
+				PageSize:   5,
 			},
 			Stub: func(m *mockdb.MockMsQ) {
 				m.EXPECT().ListAccount(gomock.Any(), gomock.Eq(db.ListAccountParams{
-					Limit: 5,
+					Limit:  5,
 					Offset: 0,
 				})).Times(1).Return(xacc, nil)
 			},
@@ -258,41 +255,38 @@ func TestListAccounts(t *testing.T) {
 
 				require.Equal(t, xacc, gotxAcc)
 			},
-			
 		},
 		{
 			Name: "Internal Server Error",
 			Input: listAccountsParams{
 				PageNumber: 1,
-				PageSize: 5,
+				PageSize:   5,
 			},
 			Stub: func(m *mockdb.MockMsQ) {
 				m.EXPECT().ListAccount(gomock.Any(), gomock.Eq(db.ListAccountParams{
-					Limit: 5,
+					Limit:  5,
 					Offset: 0,
 				})).Times(1).Return([]db.Account{}, sql.ErrConnDone)
 			},
 			Expected: func(t *testing.T, res *httptest.ResponseRecorder) {
 				require.Equal(t, res.Code, http.StatusInternalServerError)
 			},
-			
 		},
 		{
 			Name: "Bad Request",
 			Input: listAccountsParams{
 				PageNumber: 1,
-				PageSize: 200,
+				PageSize:   200,
 			},
 			Stub: func(m *mockdb.MockMsQ) {
 				m.EXPECT().ListAccount(gomock.Any(), gomock.Eq(db.ListAccountParams{
-					Limit: 5,
+					Limit:  5,
 					Offset: 0,
 				})).Times(0)
 			},
 			Expected: func(t *testing.T, res *httptest.ResponseRecorder) {
 				require.Equal(t, res.Code, http.StatusBadRequest)
 			},
-			
 		},
 	}
 	for _, tC := range testCases {

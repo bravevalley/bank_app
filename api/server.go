@@ -20,6 +20,7 @@ func NewServer(masterQ db.MsQ) *Server {
 	router.POST("/accounts", server.createAccount)
 	router.GET("/accounts/:id", server.getAccountByID)
 	router.GET("/accounts", server.listAccounts)
+	router.POST("/transfers", server.TransferTranx)
 
 	server.Router = router
 	return server
