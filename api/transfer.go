@@ -14,7 +14,7 @@ type TransferTranxParams struct {
 	Sender   int64  `json:"sender" binding:"required"`
 	Receiver int64  `json:"receiver" binding:"required"`
 	Amount   int    `json:"amount" binding:"required,gt=0"`
-	Currency string `json:"currency" binding:"required,oneof=USD NGN EUR"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
 // TransferTranx is the handler for the transfer api endpoint
