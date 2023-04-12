@@ -16,6 +16,12 @@ migrateup:
 migratedown:
 	migrate -path db/migration/ -database "postgres://root:aregbesola@127.0.0.1:15432/omnibank?sslmode=disable" -verbose down
 
+migrateup1:
+	migrate -path db/migration/ -database "postgres://root:aregbesola@127.0.0.1:15432/omnibank?sslmode=disable" -verbose up 1
+
+migratedown1:
+	migrate -path db/migration/ -database "postgres://root:aregbesola@127.0.0.1:15432/omnibank?sslmode=disable" -verbose down 1
+
 sqlc:
 	sqlc generate
 
