@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	AddAccountBal(ctx context.Context, arg AddAccountBalParams) (Account, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAccTransfers(ctx context.Context, debit int64) error
 	DeleteAccount(ctx context.Context, accNumber int64) error
 	DeleteAllTransactions(ctx context.Context, accNumber int64) error
@@ -20,6 +21,7 @@ type Querier interface {
 	GetAccountForUpdate(ctx context.Context, accNumber int64) (Account, error)
 	GetTransaction(ctx context.Context, id int64) (Transaction, error)
 	GetTransfer(ctx context.Context, id int64) (Transfer, error)
+	GetUser(ctx context.Context, username string) (User, error)
 	ListAccTransactions(ctx context.Context, arg ListAccTransactionsParams) ([]Transaction, error)
 	ListAccount(ctx context.Context, arg ListAccountParams) ([]Account, error)
 	ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error)

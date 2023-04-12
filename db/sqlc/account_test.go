@@ -12,9 +12,11 @@ import (
 
 // CreateAcc is a standalone test that creates and test account entry into the database
 func CreateAcc(t *testing.T) Account {
+	user := CreateAUser(t)
+
 	// Create the expected DB entry
 	want := CreateAccountParams{
-		Name:     utils.RandomName(),
+		Name:     user.Username,
 		Balance:  utils.RandomAmount(),
 		Currency: utils.RdnCurr(),
 	}
