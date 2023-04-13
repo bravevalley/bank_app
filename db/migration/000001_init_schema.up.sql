@@ -1,6 +1,6 @@
 CREATE TABLE account(
 	acc_number BIGSERIAL PRIMARY KEY,
-	name varchar(150) NOT NULL UNIQUE,
+	name varchar(150) NOT NULL,
 	balance bigint NOT NULL,
 	currency varchar(3) NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT NOW()

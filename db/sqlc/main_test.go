@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dassyareg/bank_app/utils"
-	_ "github.com/jackc/pgx/stdlib"
+	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries

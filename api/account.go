@@ -6,13 +6,15 @@ import (
 
 	db "github.com/dassyareg/bank_app/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 type createAccountParams struct {
 	Name     string `json:"name" binding:"required"`
-	Currency string `json:"currency" binding:"required,oneof=USD NGN"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
+// createAccount is used to create a new bank account
 func (server *Server) createAccount(gc *gin.Context) {
 	var createdAcc createAccountParams
 
@@ -28,6 +30,13 @@ func (server *Server) createAccount(gc *gin.Context) {
 	})
 
 	if err != nil {
+		if pgerr, ok := err.(*pq.Error); ok {
+			switch pgerr.Code.Name() {
+			case "foreign_key_violation", "unique_violation":
+				gc.JSON(http.StatusBadRequest, errorRes(err))
+			}
+			return
+		}
 		gc.JSON(http.StatusInternalServerError, errorRes(err))
 		return
 	}

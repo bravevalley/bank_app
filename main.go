@@ -7,7 +7,7 @@ import (
 	"github.com/dassyareg/bank_app/api"
 	db "github.com/dassyareg/bank_app/db/sqlc"
 	"github.com/dassyareg/bank_app/utils"
-	_ "github.com/jackc/pgx/stdlib"
+	_ "github.com/lib/pq"
 )
 
 var err error

@@ -116,7 +116,7 @@ func randomAccount() db.Account {
 func TestCreateAccount(t *testing.T) {
 	type AccCreate struct {
 		Name     string `json:"name" binding:"required"`
-		Currency string `json:"currency" binding:"required,oneof=USD NGN"`
+		Currency string `json:"currency" binding:"required,currency"`
 	}
 
 	account := db.Account{
@@ -176,7 +176,7 @@ func TestCreateAccount(t *testing.T) {
 			Name: "Bad Request",
 			AccountInfo: AccCreate{
 				Name:     account.Name,
-				Currency: "YEN",
+				Currency: "POP",
 			},
 			Stub: func(m *mock.MockMsQ) {
 				m.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(db.CreateAccountParams{
