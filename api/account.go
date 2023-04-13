@@ -33,7 +33,7 @@ func (server *Server) createAccount(gc *gin.Context) {
 		if pgerr, ok := err.(*pq.Error); ok {
 			switch pgerr.Code.Name() {
 			case "foreign_key_violation", "unique_violation":
-				gc.JSON(http.StatusBadRequest, errorRes(err))
+				gc.JSON(http.StatusForbidden, errorRes(err))
 			}
 			return
 		}

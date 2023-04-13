@@ -23,6 +23,8 @@ func NewServer(masterQ db.MsQ) *Server {
 		v.RegisterValidation("currency", validateCurrency)
 	}
 
+	router.POST("/users", server.addUser)
+
 	router.POST("/accounts", server.createAccount)
 	router.GET("/accounts/:id", server.getAccountByID)
 	router.GET("/accounts", server.listAccounts)
