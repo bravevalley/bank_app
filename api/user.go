@@ -12,12 +12,12 @@ import (
 
 type CreateUserArgs struct {
 	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required,min=7"`
+	Password string `json:"password" binding:"required,min=6"`
 	FullName string `json:"full_name" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 }
 
-type ReturnUser struct {
+type ResponseUser struct {
 	Username  string    `json:"username"`
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
@@ -27,7 +27,7 @@ type ReturnUser struct {
 func (server *Server) addUser(gc *gin.Context) {
 	var createdUser CreateUserArgs
 
-	if err := gc.ShouldBind(&createdUser); err != nil {
+	if err := gc.ShouldBindJSON(&createdUser); err != nil {
 		gc.IndentedJSON(http.StatusBadRequest, errorRes(err))
 		return
 	}
@@ -58,7 +58,7 @@ func (server *Server) addUser(gc *gin.Context) {
 		}
 	}
 
-	AddedUser := ReturnUser{
+	AddedUser := ResponseUser{
 		Username: user.Username,
 		FullName: user.FullName,
 		Email:    user.Email,

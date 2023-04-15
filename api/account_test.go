@@ -114,10 +114,6 @@ func randomAccount() db.Account {
 }
 
 func TestCreateAccount(t *testing.T) {
-	type AccCreate struct {
-		Name     string `json:"name" binding:"required"`
-		Currency string `json:"currency" binding:"required,currency"`
-	}
 
 	account := db.Account{
 		Name:      utils.RandomName(),
@@ -133,13 +129,13 @@ func TestCreateAccount(t *testing.T) {
 
 	testCases := []struct {
 		Name        string
-		AccountInfo AccCreate
+		AccountInfo createAccountParams
 		Stub        func(m *mock.MockMsQ)
 		Expected    func(t *testing.T, res *httptest.ResponseRecorder)
 	}{
 		{
 			Name: "Ok",
-			AccountInfo: AccCreate{
+			AccountInfo: createAccountParams{
 				Name:     account.Name,
 				Currency: account.Currency,
 			},
@@ -157,7 +153,7 @@ func TestCreateAccount(t *testing.T) {
 		},
 		{
 			Name: "Internal Server Error",
-			AccountInfo: AccCreate{
+			AccountInfo: createAccountParams{
 				Name:     account.Name,
 				Currency: account.Currency,
 			},
@@ -174,7 +170,7 @@ func TestCreateAccount(t *testing.T) {
 		},
 		{
 			Name: "Bad Request",
-			AccountInfo: AccCreate{
+			AccountInfo: createAccountParams{
 				Name:     account.Name,
 				Currency: "POP",
 			},

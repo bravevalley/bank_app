@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -49,4 +50,16 @@ func RdnCurr() string {
 	xCurr := []string{"NGN", "USD", "YEN"}
 
 	return xCurr[rdm.Intn(len(xCurr))]
+}
+
+func RandomEmail(limit int) string {
+	var str strings.Builder
+
+	username := rdmString(limit)
+	domain := rdmString(5)
+
+	fmt.Fprintf(&str, "%s@%s.com", username,domain)
+
+	return str.String()
+	
 }
