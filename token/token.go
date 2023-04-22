@@ -9,5 +9,5 @@ type TokenMaker interface {
 	GenerateToken(username string, duration time.Duration) (string, error)
 
 	// VerifyToken Verifies and authenticate a token
-	VerifyToken(token *string) (*Payload, error)
+	VerifyToken(token string) (*Payload, error)
 }

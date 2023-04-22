@@ -18,7 +18,7 @@ func TestHashPassword(t *testing.T) {
 	}{
 		{
 			Name: "Hash Password",
-			Password: rdmString(6),
+			Password: RdmString(6),
 			WantErr: fmt.Errorf(""),
 			TestFunc: func(t *testing.T, pwd string, wantErr error) {
 				hashedPwd, err := HashPassword(pwd)
@@ -28,7 +28,7 @@ func TestHashPassword(t *testing.T) {
 		},
 		{
 			Name: "Hash Uniqueness",
-			Password: rdmString(6),
+			Password: RdmString(6),
 			WantErr: fmt.Errorf(""),
 			TestFunc: func(t *testing.T, pwd string, wantErr error) {
 				hashedPwd, err := HashPassword(pwd)
@@ -42,7 +42,7 @@ func TestHashPassword(t *testing.T) {
 		},
 		{
 			Name: "Cant Hash",
-			Password: rdmString(10000),
+			Password: RdmString(10000),
 			WantErr: fmt.Errorf("Can't Hash Password"),
 			TestFunc: func(t *testing.T, pwd string, wantErr error) {
 				hashedPwd, err := HashPassword(pwd)
@@ -53,7 +53,7 @@ func TestHashPassword(t *testing.T) {
 		},
 		{
 			Name: "Verify Password: Right Input",
-			Password: rdmString(6),
+			Password: RdmString(6),
 			WantErr: fmt.Errorf(""),
 			TestFunc: func(t *testing.T, pwd string, wantErr error) {
 				hashedPwd, err := HashPassword(pwd)
@@ -66,7 +66,7 @@ func TestHashPassword(t *testing.T) {
 		},
 		{
 			Name: "Verify Password: Wrong Input",
-			Password: rdmString(6),
+			Password: RdmString(6),
 			WantErr: fmt.Errorf(""),
 			TestFunc: func(t *testing.T, pwd string, wantErr error) {
 				hashedPwd, err := HashPassword(pwd)
