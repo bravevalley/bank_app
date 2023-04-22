@@ -9,8 +9,8 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-type UserTestMatcher struct{
-	Arg db.CreateUserParams
+type UserTestMatcher struct {
+	Arg      db.CreateUserParams
 	Password string
 }
 
@@ -20,7 +20,7 @@ func (u UserTestMatcher) Matches(x interface{}) bool {
 	if !ok {
 		return false
 	}
-	
+
 	// Verify the inputed password with the converted
 	err := utils.VerifyPassword(u.Password, UserInput.HashedPassword)
 	if err != nil {
@@ -38,8 +38,9 @@ func (u UserTestMatcher) String() string {
 	return fmt.Sprintf("Matches %v with %v", u.Arg.HashedPassword, u.Password)
 }
 
-
-func MatchUserInput(argument db.CreateUserParams, password string) gomock.Matcher { return UserTestMatcher{
-	Arg: argument,
-	Password: password,
-} }
+func MatchUserInput(argument db.CreateUserParams, password string) gomock.Matcher {
+	return UserTestMatcher{
+		Arg:      argument,
+		Password: password,
+	}
+}

@@ -29,13 +29,12 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	id := uuid.Must(uuid.NewRandom())
 
 	return &Payload{
-		ID: id,
-		Username: username,
+		ID:        id,
+		Username:  username,
 		CreatedAt: time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}, nil
 }
-
 
 // Valid is used to validate the Token by using the Payload
 func (pl *Payload) Valid() error {

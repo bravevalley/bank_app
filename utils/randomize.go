@@ -58,8 +58,8 @@ func RandomEmail(limit int) string {
 	username := RdmString(limit)
 	domain := RdmString(5)
 
-	fmt.Fprintf(&str, "%s@%s.com", username,domain)
+	fmt.Fprintf(&str, "%s@%s.com", username, domain)
 
 	return str.String()
-	
+
 }

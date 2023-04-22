@@ -48,20 +48,20 @@ func (server *Server) addUser(gc *gin.Context) {
 	user, err := server.MasterQuery.CreateUser(gc, arg)
 	if err != nil {
 		if pqerr, ok := err.(*pq.Error); ok {
-			switch pqerr.Code.Name(){
+			switch pqerr.Code.Name() {
 			case "unique_violation":
 				gc.IndentedJSON(http.StatusForbidden, errorRes(err))
 				return
 			}
-		gc.IndentedJSON(http.StatusInternalServerError, errorRes(err))
-		return
+			gc.IndentedJSON(http.StatusInternalServerError, errorRes(err))
+			return
 		}
 	}
 
 	AddedUser := ResponseUser{
-		Username: user.Username,
-		FullName: user.FullName,
-		Email:    user.Email,
+		Username:  user.Username,
+		FullName:  user.FullName,
+		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
 	}
 

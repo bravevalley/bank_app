@@ -8,9 +8,9 @@ const (
 
 func IsValidCurrency(currency string) bool {
 	switch currency {
-	case USD,NGN,YEN:
+	case USD, NGN, YEN:
 		return true
 	}
-	
+
 	return false
 }

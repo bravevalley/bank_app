@@ -25,7 +25,7 @@ func (server *Server) TransferTranx(gc *gin.Context) {
 		gc.JSON(http.StatusBadRequest, errorRes(err))
 		return
 	}
-	
+
 	if ok := server.testCurrency(gc, transferTransaction.Sender, transferTransaction.Currency); !ok {
 		gc.JSON(http.StatusBadRequest, errorRes(fmt.Errorf("Currency of Account %d doesn't match the submitted currency [%v]", transferTransaction.Sender, transferTransaction.Currency)))
 		return

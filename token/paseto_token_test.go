@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/dassyareg/bank_app/utils"
-	"github.com/golang-jwt/jwt"
+	"github.com/o1egl/paseto"
 	"github.com/stretchr/testify/require"
 )
 
-func TestJwToken_Happy(t *testing.T) {
+func TestPaseto_Happy(t *testing.T) {
 
-	Jwtoken, err := NewJwToken(utils.RandomEmail(32))
+	PaseToken, err := NewPaseToken(utils.RdmString(32))
 	require.NoError(t, err)
-	require.NotEmpty(t, Jwtoken)
+	require.NotEmpty(t, PaseToken)
 
 	username := utils.RandomName()
 	duration := time.Second * 3
@@ -21,11 +21,11 @@ func TestJwToken_Happy(t *testing.T) {
 	createdAt := time.Now()
 	expiredAt := time.Now().Add(duration)
 
-	Token, err := Jwtoken.GenerateToken(username, duration)
+	Token, err := PaseToken.GenerateToken(username, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, Token)
 
-	payload, err := Jwtoken.VerifyToken(Token)
+	payload, err := PaseToken.VerifyToken(Token)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
@@ -35,19 +35,19 @@ func TestJwToken_Happy(t *testing.T) {
 	require.WithinDuration(t, expiredAt, payload.ExpiredAt, time.Second)
 }
 
-func TestJwToken_ExpiredToken(t *testing.T) {
+func TestPaseto_ExpiredToken(t *testing.T) {
 
-	Jwtoken, err := NewJwToken(utils.RandomEmail(32))
+	PaseToken, err := NewPaseToken(utils.RdmString(32))
 	require.NoError(t, err)
-	require.NotEmpty(t, Jwtoken)
+	require.NotEmpty(t, PaseToken)
 
 	username := utils.RandomName()
 
-	Token, err := Jwtoken.GenerateToken(username, -time.Minute)
+	Token, err := PaseToken.GenerateToken(username, -time.Minute)
 	require.NoError(t, err)
 	require.NotEmpty(t, Token)
 
-	payload, err := Jwtoken.VerifyToken(Token)
+	payload, err := PaseToken.VerifyToken(Token)
 	require.Error(t, err)
 	require.EqualError(t, err, ErrExpiredToken.Error())
 
@@ -55,7 +55,7 @@ func TestJwToken_ExpiredToken(t *testing.T) {
 
 }
 
-func TestJwToken_ShortSecretKey(t *testing.T) {
+func TestPaseto_ShortSecretKey(t *testing.T) {
 
 	_, err := NewJwToken(utils.RdmString(31))
 	require.Error(t, err)
@@ -63,22 +63,19 @@ func TestJwToken_ShortSecretKey(t *testing.T) {
 
 }
 
-func TestJwToken_InvalidToken(t *testing.T) {
+func TestPaseto_InvalidToken(t *testing.T) {
 	payload, err := NewPayload(utils.RandomName(), time.Minute*1)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
-	jwtoken := jwt.NewWithClaims(jwt.SigningMethodNone, payload)
-	Token, err := jwtoken.SignedString(jwt.UnsafeAllowNoneSignatureType)
-	require.NoError(t, err)
-	require.NotEmpty(t, Token)
-
-	tokenizer, err := NewJwToken(utils.RdmString(32))
+	PaseToken, err := paseto.NewV2().Encrypt([]byte("YELLOW SUBMARINE, BLACK WIZARDRY"), payload, nil)
 	require.NoError(t, err)
 
-	NewPayload, err := tokenizer.VerifyToken(Token)
+	tokenizer, err := NewPaseToken(utils.RdmString(32))
+	require.NoError(t, err)
+
+	NewPayload, err := tokenizer.VerifyToken(PaseToken)
 	require.Error(t, err)
 	require.Empty(t, NewPayload)
 	require.EqualError(t, err, ErrInvalidToken.Error())
-
 }

@@ -6,9 +6,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
-
-
 func HashPassword(pwd string) (string, error) {
 	password := []byte(pwd)
 
@@ -21,6 +18,6 @@ func HashPassword(pwd string) (string, error) {
 	return string(newPassword), nil
 }
 
-func VerifyPassword(inputPwd, hashedPwd string) error  {
+func VerifyPassword(inputPwd, hashedPwd string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(inputPwd))
 }

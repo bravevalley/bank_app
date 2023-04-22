@@ -14,7 +14,7 @@ const MinSecretKeyLen = 32
 
 // JwToken is the struct containing the secret key
 type JwToken struct {
-	Secretkey string 
+	Secretkey string
 }
 
 // NewJwToken returns a new JWToken struct after testing its length against
@@ -29,7 +29,7 @@ func NewJwToken(secretKey string) (TokenMaker, error) {
 	}, nil
 }
 
-// GenerateToken creates a JWT token from the payload and signs it with the 
+// GenerateToken creates a JWT token from the payload and signs it with the
 // JwToken struct secret key
 func (jwtoken *JwToken) GenerateToken(username string, duration time.Duration) (string, error) {
 	payload, err := NewPayload(username, duration)
@@ -45,7 +45,7 @@ func (jwtoken *JwToken) GenerateToken(username string, duration time.Duration) (
 // VerifyToken verifies the authenticity of the token and parse the
 // payload into the Payload struct
 func (jwttoken *JwToken) VerifyToken(token string) (*Payload, error) {
-	
+
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -54,7 +54,7 @@ func (jwttoken *JwToken) VerifyToken(token string) (*Payload, error) {
 		return []byte(jwttoken.Secretkey), nil
 	}
 
-	Token, err := jwt.ParseWithClaims(token , &Payload{}, keyFunc)
+	Token, err := jwt.ParseWithClaims(token, &Payload{}, keyFunc)
 	if err != nil {
 		verr, ok := err.(*jwt.ValidationError)
 		if ok && errors.Is(verr.Inner, ErrExpiredToken) {

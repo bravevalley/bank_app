@@ -11,24 +11,22 @@ import (
 
 func randomUser() User {
 	return User{
-		Username: utils.RandomName(),
+		Username:       utils.RandomName(),
 		HashedPassword: utils.RandomName(),
-		FullName: utils.RandomName(),
-		Email: utils.RandomName(),
+		FullName:       utils.RandomName(),
+		Email:          utils.RandomName(),
 	}
 }
-
-
 
 // TestCreateUser tests the CreateUser method
 func CreateAUser(t *testing.T) User {
 	newUser := randomUser()
 
 	createdUser, err := testQueries.CreateUser(context.Background(), CreateUserParams{
-		Username: newUser.Username,
+		Username:       newUser.Username,
 		HashedPassword: newUser.HashedPassword,
-		FullName: newUser.FullName,
-		Email: newUser.Email,
+		FullName:       newUser.FullName,
+		Email:          newUser.Email,
 	})
 
 	require.NoError(t, err)
