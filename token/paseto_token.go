@@ -12,17 +12,16 @@ type PaseToken struct {
 	SymmetricKey []byte
 }
 
-func NewPaseToken(SymmetricKey string) (TokenMaker, error)  {
+func NewPaseToken(SymmetricKey string) (TokenMaker, error) {
 	if len(SymmetricKey) != chacha20poly1305.KeySize {
 		return nil, ErrInvalidToken
 	}
 
 	return &PaseToken{
-		Version: *paseto.NewV2(),
+		Version:      *paseto.NewV2(),
 		SymmetricKey: []byte(SymmetricKey),
 	}, nil
 }
-
 
 func (pst *PaseToken) GenerateToken(username string, duration time.Duration) (string, error) {
 	payload, err := NewPayload(username, duration)

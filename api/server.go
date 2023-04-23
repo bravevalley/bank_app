@@ -2,18 +2,26 @@ package api
 
 import (
 	db "github.com/dassyareg/bank_app/db/sqlc"
+	"github.com/dassyareg/bank_app/token"
+	"github.com/dassyareg/bank_app/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
 
 type Server struct {
+	TokenMaker  token.TokenMaker
 	MasterQuery db.MsQ
 	Router      *gin.Engine
 }
 
-func NewServer(masterQ db.MsQ) *Server {
+func NewServer(config utils.Config, masterQ db.MsQ) (*Server, error) {
+	Token, err := token.NewPaseToken(config.SymmetricKey)
+	if err != nil {
+		return nil, err
+	}
 	server := &Server{
+		TokenMaker:  Token,
 		MasterQuery: masterQ,
 	}
 
@@ -31,7 +39,7 @@ func NewServer(masterQ db.MsQ) *Server {
 	router.POST("/transfers", server.TransferTranx)
 
 	server.Router = router
-	return server
+	return server, nil
 }
 
 // Start start the http server and listens for request on the address provided

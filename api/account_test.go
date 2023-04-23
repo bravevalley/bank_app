@@ -84,7 +84,7 @@ func TestGetAccountByID(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, url, nil)
 			res := httptest.NewRecorder()
 
-			server := NewServer(msQ)
+			server := NewTestServer(t, msQ)
 			server.Router.ServeHTTP(res, req)
 
 			tC.expected(t, res)
@@ -190,7 +190,7 @@ func TestCreateAccount(t *testing.T) {
 		t.Run(tC.Name, func(t *testing.T) {
 			tC.Stub(msQ)
 
-			server := NewServer(msQ)
+			server := NewTestServer(t, msQ)
 			url := fmt.Sprint("/accounts")
 
 			reqBody, err := json.Marshal(&tC.AccountInfo)
@@ -289,7 +289,7 @@ func TestListAccounts(t *testing.T) {
 		t.Run(tC.Name, func(t *testing.T) {
 			tC.Stub(msQ)
 
-			server := NewServer(msQ)
+			server := NewTestServer(t, msQ)
 
 			url := fmt.Sprintf("/accounts?page_id=%d&page_size=%d", tC.Input.PageNumber, tC.Input.PageSize)
 

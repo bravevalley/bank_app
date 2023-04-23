@@ -1,14 +1,18 @@
 package utils
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
 // Config is the struct containing the env to be exported
 type Config struct {
-	DBDriver string `mapstructure:"DB_DRIVER"`
-	DBSource string `mapstructure:"DB_SOURCE"`
-	Address  string `mapstructure:"ADDRESS"`
+	DBDriver      string        `mapstructure:"DB_DRIVER"`
+	DBSource      string        `mapstructure:"DB_SOURCE"`
+	Address       string        `mapstructure:"ADDRESS"`
+	SymmetricKey  string        `mapstructure:"SYMMETRICKEY"`
+	TokenDuration time.Duration `mapstructure:"TOKEN_DURATION"`
 }
 
 // LoadConfig loads the config values to the Config struct and returns it

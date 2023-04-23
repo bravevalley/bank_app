@@ -66,7 +66,7 @@ func TestAddUser(t *testing.T) {
 		t.Run(tC.Name, func(t *testing.T) {
 			tC.Stub(mockDB)
 
-			server := NewServer(mockDB)
+			server := NewTestServer(t, mockDB)
 			res := httptest.NewRecorder()
 
 			body, err := json.Marshal(&tC.Arg)
