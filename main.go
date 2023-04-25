@@ -25,7 +25,10 @@ func main() {
 
 	masterQ := db.NewMasterQuery(conn)
 
-	server := api.NewServer(masterQ)
+	server, err := api.NewServer(config, masterQ)
+	if err != nil {
+		log.Fatalln("Cant start server ", err)
+	}
 
 	err = server.Start(config.Address)
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 
 type Server struct {
 	TokenMaker  token.TokenMaker
+	Config      utils.Config
 	MasterQuery db.MsQ
 	Router      *gin.Engine
 }
@@ -32,6 +33,7 @@ func NewServer(config utils.Config, masterQ db.MsQ) (*Server, error) {
 	}
 
 	router.POST("/users", server.addUser)
+	router.POST("/users/login", server.loginUser)
 
 	router.POST("/accounts", server.createAccount)
 	router.GET("/accounts/:id", server.getAccountByID)
