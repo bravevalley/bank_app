@@ -13,6 +13,12 @@ const (
 	AuthPayload     = "Auth_Payload"
 	AuthType        = "bearer"
 	AuthHeaderField = "Authorization"
+
+	ErrNoAuth = "No Authorization Header found"
+	ErrNoToken = "No Authentication token provide"
+	ErrInvalidAuthType = "Invalid Auth method"
+	ErrAuthFailed = "Auth failed"
+
 )
 
 // AuthMiddleWare returns an handlerFunc that handles authentication before
@@ -20,8 +26,8 @@ const (
 func AuthMiddleWare(tokenMaker token.TokenMaker) gin.HandlerFunc {
 	return func(gc *gin.Context) {
 		authHeader := gc.GetHeader(AuthHeaderField)
-		err := errors.New("No Authentication token provide")
 		if len(authHeader) <= 0 || authHeader == "" {
+			err := errors.New(ErrNoAuth)
 			gc.AbortWithStatusJSON(http.StatusBadRequest, errorRes(err))
 			return
 		}
@@ -29,15 +35,13 @@ func AuthMiddleWare(tokenMaker token.TokenMaker) gin.HandlerFunc {
 		auth := strings.Fields(authHeader)
 
 		if len(auth) < 2 {
-			err := errors.New("No Authentication token provide")
-			if len(authHeader) <= 0 || authHeader == "" {
-				gc.AbortWithStatusJSON(http.StatusBadRequest, errorRes(err))
-				return
-			}
+			err := errors.New(ErrNoToken)
+			gc.AbortWithStatusJSON(http.StatusBadRequest, errorRes(err))
+			return
 		}
 
 		if strings.ToLower(auth[0]) != AuthType {
-			err = errors.New("Invalid Auth method")
+			err := errors.New(ErrInvalidAuthType)
 			gc.AbortWithStatusJSON(http.StatusBadRequest, errorRes(err))
 			return
 		}
@@ -46,7 +50,8 @@ func AuthMiddleWare(tokenMaker token.TokenMaker) gin.HandlerFunc {
 
 		Payload, err := tokenMaker.VerifyToken(token)
 		if err != nil {
-			gc.AbortWithStatusJSON(http.StatusBadRequest, errors.New("Auth failed"))
+			err := errors.New(ErrAuthFailed)
+			gc.AbortWithStatusJSON(http.StatusUnauthorized, errorRes(err))
 			return
 		}
 

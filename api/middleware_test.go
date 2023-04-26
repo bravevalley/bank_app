@@ -10,6 +10,7 @@ import (
 	"github.com/dassyareg/bank_app/token"
 	"github.com/dassyareg/bank_app/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,6 +38,74 @@ func TestAuthMiddleWare(t *testing.T) {
 			},
 			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
 				require.Equal(t, res.Code, http.StatusOK)
+			},
+		},
+		{
+			Name: "Wrong auth type",
+	
+			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
+				Token := createTokenReq(t, utils.RandomName(), time.Minute, tokenMaker)
+	
+				AuthValue := fmt.Sprintf("%s %s", "AuthType", Token)
+	
+				req.Header.Set(AuthHeaderField, AuthValue)
+			},
+			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusBadRequest)
+				expectedErr, err := json.Marshal(gin.H{"error": ErrInvalidAuthType})
+				require.NoError(t, err)
+				require.Equal(t, expectedErr, res.Body.Bytes())
+			},
+		},
+		{
+			Name: "No auth type",
+	
+			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
+				Token := createTokenReq(t, utils.RandomName(), time.Minute, tokenMaker)
+	
+				AuthValue := fmt.Sprintf("%s",  Token)
+	
+				req.Header.Set(AuthHeaderField, AuthValue)
+			},
+			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusBadRequest)
+				expectedErr, err := json.Marshal(gin.H{"error": ErrNoToken})
+				require.NoError(t, err)
+				require.Equal(t, expectedErr, res.Body.Bytes())
+			},
+		},
+		{
+			Name: "Wrong Token",
+	
+			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
+				CreateToken, err := token.NewPaseToken(utils.RdmString(32))
+				require.NoError(t,err)
+
+				Token, err := CreateToken.GenerateToken("Memphis", time.Hour)
+				require.NoError(t, err)
+	
+				AuthValue := fmt.Sprintf("%s %s", AuthType, Token)
+	
+				req.Header.Set(AuthHeaderField, AuthValue)
+			},
+			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusUnauthorized)
+				expectedErr, err := json.Marshal(gin.H{"error": ErrAuthFailed})
+				require.NoError(t, err)
+				require.Equal(t, expectedErr, res.Body.Bytes())
+			},
+		},
+		{
+			Name: "No Token",
+	
+			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
+	
+			},
+			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusBadRequest)
+				expectedErr, err := json.Marshal(gin.H{"error": ErrNoAuth})
+				require.NoError(t, err)
+				require.Equal(t, expectedErr, res.Body.Bytes())
 			},
 		},
 	}
