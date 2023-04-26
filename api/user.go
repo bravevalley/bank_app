@@ -14,9 +14,9 @@ import (
 
 func convertUser(user db.User) ResponseUser {
 	return ResponseUser{
-		Username: user.Username,
-		FullName: user.FullName,
-		Email: user.Email,
+		Username:  user.Username,
+		FullName:  user.FullName,
+		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
 	}
 }
@@ -122,9 +122,9 @@ func (server *Server) loginUser(gc *gin.Context) {
 		return
 	}
 
-	loginedUser := UserLoginResponse {
+	loginedUser := UserLoginResponse{
 		Access_token: accesstoken,
-		User: convertUser(userdata),
+		User:         convertUser(userdata),
 	}
 
 	gc.IndentedJSON(http.StatusOK, loginedUser)
