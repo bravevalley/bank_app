@@ -14,10 +14,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createTokenReq(t *testing.T, username string, duration time.Duration, tokenMaker token.TokenMaker)  string {
-	token, err :=  tokenMaker.GenerateToken(username, duration)
+func AddAuthHeader(t *testing.T, username string, duration time.Duration, tokenMaker token.TokenMaker, req *http.Request, AuthorizationType string) {
+	Token, err :=  tokenMaker.GenerateToken(username, duration)
 	require.NoError(t, err)
-	return token
+	AuthValue := fmt.Sprintf("%s %s", AuthorizationType, Token)
+	req.Header.Set(AuthHeaderField, AuthValue)
 }
 
 func TestAuthMiddleWare(t *testing.T) {
@@ -30,25 +31,30 @@ func TestAuthMiddleWare(t *testing.T) {
 			Name: "Ok",
 	
 			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
-				Token := createTokenReq(t, utils.RandomName(), time.Minute, tokenMaker)
-	
-				AuthValue := fmt.Sprintf("%s %s", AuthType, Token)
-	
-				req.Header.Set(AuthHeaderField, AuthValue)
+				AddAuthHeader(t, utils.RandomName(), time.Minute, tokenMaker, req, AuthType)
 			},
 			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
 				require.Equal(t, res.Code, http.StatusOK)
 			},
 		},
 		{
+			Name: "Expired token",
+	
+			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
+				AddAuthHeader(t, utils.RandomName(), -time.Minute, tokenMaker, req, AuthType)
+			},
+			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
+				require.Equal(t, res.Code, http.StatusUnauthorized)
+				expectedErr, err := json.Marshal(gin.H{"error": ErrAuthFailed})
+				require.NoError(t, err)
+				require.Equal(t, expectedErr, res.Body.Bytes())
+			},
+		},
+		{
 			Name: "Wrong auth type",
 	
 			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
-				Token := createTokenReq(t, utils.RandomName(), time.Minute, tokenMaker)
-	
-				AuthValue := fmt.Sprintf("%s %s", "AuthType", Token)
-	
-				req.Header.Set(AuthHeaderField, AuthValue)
+				AddAuthHeader(t, utils.RandomName(), time.Minute, tokenMaker, req, "AuthType")
 			},
 			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
 				require.Equal(t, res.Code, http.StatusBadRequest)
@@ -61,11 +67,8 @@ func TestAuthMiddleWare(t *testing.T) {
 			Name: "No auth type",
 	
 			Setup: func(t *testing.T, req *http.Request, tokenMaker token.TokenMaker) {
-				Token := createTokenReq(t, utils.RandomName(), time.Minute, tokenMaker)
+				AddAuthHeader(t, utils.RandomName(), time.Minute, tokenMaker, req, "")
 	
-				AuthValue := fmt.Sprintf("%s",  Token)
-	
-				req.Header.Set(AuthHeaderField, AuthValue)
 			},
 			CheckResponse: func(t *testing.T, res httptest.ResponseRecorder) {
 				require.Equal(t, res.Code, http.StatusBadRequest)
@@ -125,13 +128,11 @@ func TestAuthMiddleWare(t *testing.T) {
 			req, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 
-			// TODO: Modify Request with Token and AUtorization Header
 			tc.Setup(t, req, server.TokenMaker)
 
 
 			server.Router.ServeHTTP(res, req)
 
-			// TODO: Test response to confirm when got the expected.
 			tc.CheckResponse(t, *res)
 
 		})

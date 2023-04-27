@@ -35,10 +35,12 @@ func NewServer(config utils.Config, masterQ db.MsQ) (*Server, error) {
 	router.POST("/users", server.addUser)
 	router.POST("/users/login", server.loginUser)
 
-	router.POST("/accounts", server.createAccount)
-	router.GET("/accounts/:id", server.getAccountByID)
-	router.GET("/accounts", server.listAccounts)
-	router.POST("/transfers", server.TransferTranx)
+	authRouteGroup := router.Group("/").Use(AuthMiddleWare(server.TokenMaker))
+
+	authRouteGroup.POST("/accounts", server.createAccount)
+	authRouteGroup.GET("/accounts/:id", server.getAccountByID)
+	authRouteGroup.GET("/accounts", server.listAccounts)
+	authRouteGroup.POST("/transfers", server.TransferTranx)
 
 	server.Router = router
 	return server, nil

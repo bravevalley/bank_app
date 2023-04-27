@@ -2,10 +2,12 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 
 	db "github.com/dassyareg/bank_app/db/sqlc"
+	"github.com/dassyareg/bank_app/token"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,11 +28,29 @@ func (server *Server) TransferTranx(gc *gin.Context) {
 		return
 	}
 
-	if ok := server.testCurrency(gc, transferTransaction.Sender, transferTransaction.Currency); !ok {
+	clientData := gc.MustGet(AuthPayload).(*token.Payload)
+
+	senderAccount, ok := server.checkAcc(gc, transferTransaction.Sender)
+	if !ok {
+		return 
+	}
+
+	if senderAccount.Name != clientData.Username {
+		err := errors.New("User unauthorized to make transfers")
+		gc.JSON(http.StatusUnauthorized, errorRes(err))
+		return
+	}
+
+	receiverAccount, ok := server.checkAcc(gc, transferTransaction.Receiver)
+	if !ok {
+		return 
+	}
+
+	if ok := server.testCurrency(gc, senderAccount, transferTransaction.Currency); !ok {
 		gc.JSON(http.StatusBadRequest, errorRes(fmt.Errorf("Currency of Account %d doesn't match the submitted currency [%v]", transferTransaction.Sender, transferTransaction.Currency)))
 		return
 	}
-	if ok := server.testCurrency(gc, transferTransaction.Receiver, transferTransaction.Currency); !ok {
+	if ok := server.testCurrency(gc, receiverAccount, transferTransaction.Currency); !ok {
 		gc.JSON(http.StatusBadRequest, errorRes(fmt.Errorf("Currency of Account %d doesn't match the submitted currency [%v]", transferTransaction.Receiver, transferTransaction.Currency)))
 		return
 	}
@@ -50,19 +70,24 @@ func (server *Server) TransferTranx(gc *gin.Context) {
 }
 
 // testCurrenty tests if client has an account with the currency submitted. Returns false when there is any error or if the currency do not match
-func (server *Server) testCurrency(gc *gin.Context, accNumber int64, currency string) bool {
+func (server *Server) testCurrency(gc *gin.Context, acc db.Account, currency string) bool {
+	
+	if acc.Currency != currency {
+		return false
+	}
+	return true
+}
+
+func (server *Server) checkAcc(gc *gin.Context, accNumber int64) (db.Account, bool) {
 	account, err := server.MasterQuery.GetAccount(gc, accNumber)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			gc.JSON(http.StatusNotFound, errorRes(err))
-			return false
+			return db.Account{}, false
 		}
 		gc.JSON(http.StatusInternalServerError, errorRes(err))
-		return false
+		return db.Account{}, false
 	}
 
-	if account.Currency != currency {
-		return false
-	}
-	return true
+	return account, true
 }

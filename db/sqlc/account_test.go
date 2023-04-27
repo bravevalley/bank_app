@@ -120,11 +120,22 @@ func TestUpdateAccount(t *testing.T) {
 }
 
 func TestListAccount(t *testing.T) {
+	Username := CreateAUser(t)
+	currencies := []string{"USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "HKD", "NZD"}
 	for i := 0; i < 10; i++ {
-		CreateAcc(t)
+		want := CreateAccountParams{
+			Name:     Username.Username,
+			Balance:  utils.RandomAmount(),
+			Currency: currencies[i],
+		}
+	
+		// Call the unit db function we want to test
+		_, err := testQueries.CreateAccount(context.Background(), want)
+		require.NoError(t, err)
 	}
 
 	listEle := ListAccountParams{
+		Name: Username.Username,
 		Limit:  5,
 		Offset: 5,
 	}

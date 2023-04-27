@@ -2,15 +2,16 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	db "github.com/dassyareg/bank_app/db/sqlc"
+	"github.com/dassyareg/bank_app/token"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
 
 type createAccountParams struct {
-	Name     string `json:"name" binding:"required"`
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
@@ -23,8 +24,10 @@ func (server *Server) createAccount(gc *gin.Context) {
 		return
 	}
 
+	clientData := gc.MustGet(AuthPayload).(*token.Payload)
+
 	account, err := server.MasterQuery.CreateAccount(gc, db.CreateAccountParams{
-		Name:     createdAcc.Name,
+		Name:     clientData.Username,
 		Balance:  0,
 		Currency: createdAcc.Currency,
 	})
@@ -68,6 +71,14 @@ func (server *Server) getAccountByID(gc *gin.Context) {
 		return
 	}
 
+	clientData := gc.MustGet(AuthPayload).(*token.Payload)
+	if account.Name != clientData.Username {
+		err := errors.New("User unauthorized to view data")
+		gc.JSON(http.StatusUnauthorized, errorRes(err))
+		return
+	}
+
+
 	gc.IndentedJSON(http.StatusOK, account)
 
 }
@@ -85,7 +96,9 @@ func (server *Server) listAccounts(gc *gin.Context) {
 		return
 	}
 
+	clientData := gc.MustGet(AuthPayload).(*token.Payload)
 	xaccounts, err := server.MasterQuery.ListAccount(gc, db.ListAccountParams{
+		Name: clientData.Username,
 		Limit:  listAcc.PageSize,
 		Offset: (listAcc.PageNumber - 1) * listAcc.PageSize,
 	})

@@ -17,9 +17,9 @@ FOR NO KEY UPDATE;
 
 -- name: ListAccount :many
 SELECT * FROM account
-ORDER BY name
-LIMIT $1
-OFFSET $2;
+WHERE name = $1
+LIMIT $2
+OFFSET $3;
 
 -- name: UpdateaAccountBal :one
 UPDATE account 
