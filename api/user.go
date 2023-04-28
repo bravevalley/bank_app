@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -64,9 +63,9 @@ func (server *Server) addUser(gc *gin.Context) {
 				gc.IndentedJSON(http.StatusForbidden, errorRes(err))
 				return
 			}
-			gc.IndentedJSON(http.StatusInternalServerError, errorRes(err))
-			return
 		}
+		gc.IndentedJSON(http.StatusInternalServerError, errorRes(err))
+		return
 	}
 
 	AddedUser := ResponseUser{
@@ -91,8 +90,6 @@ type UserLoginResponse struct {
 }
 
 func (server *Server) loginUser(gc *gin.Context) {
-	fmt.Print("Here\n")
-
 	var loginData UserLoginArgs
 
 	if err := gc.ShouldBindJSON(&loginData); err != nil {
@@ -103,7 +100,7 @@ func (server *Server) loginUser(gc *gin.Context) {
 	userdata, err := server.MasterQuery.GetUser(gc, loginData.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			gc.JSON(http.StatusInternalServerError, errorRes(err))
+			gc.JSON(http.StatusBadRequest, errorRes(err))
 			return
 		}
 		gc.JSON(http.StatusInternalServerError, errorRes(err))
