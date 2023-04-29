@@ -9,6 +9,10 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
+
+// UserTestMatcher is implements the matcher Interface
+// so it can be used to match the password input with the
+// hashed password
 type UserTestMatcher struct {
 	Arg      db.CreateUserParams
 	Password string
@@ -42,5 +46,43 @@ func MatchUserInput(argument db.CreateUserParams, password string) gomock.Matche
 	return UserTestMatcher{
 		Arg:      argument,
 		Password: password,
+	}
+}
+
+
+type AccNumberMatcher struct {
+	SenderAccNo int64
+	ReceiverAccNo int64
+	Input int64
+}
+
+func (a AccNumberMatcher) Matches(x interface{}) bool {
+	inputAcc, ok := x.(int64)
+	if !ok {
+		return false
+	}
+	a.Input = inputAcc
+
+	var tempVar int64
+	
+	switch inputAcc {
+	case a.SenderAccNo:
+		tempVar = a.SenderAccNo
+	case a.ReceiverAccNo:
+		tempVar = a.ReceiverAccNo
+
+	}
+	return reflect.DeepEqual(tempVar, inputAcc)
+}
+
+
+func (a AccNumberMatcher) String() string {
+	return fmt.Sprintf("Matches %d with %d or %d", a.Input, a.SenderAccNo, a.ReceiverAccNo)
+}
+
+func AccMatcher(creditAcc, debitAcc int64) gomock.Matcher {
+	return AccNumberMatcher{
+		SenderAccNo: debitAcc,
+		ReceiverAccNo: creditAcc,
 	}
 }
