@@ -11,6 +11,8 @@ RUN go build -o server main.go
 FROM alpine:latest
 WORKDIR /app
 COPY --from=Buidah /app/server .
+COPY --from=Buidah /app/app.env .
+
 
 EXPOSE 8080
 CMD ["/app/server"]
