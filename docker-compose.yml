@@ -1,0 +1,15 @@
+services:
+  database:
+    image: postgres:15.2-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=omnibank
+
+  api:
+    image: superb/web_app
+    build: .
+    environment:
+      - DB_SOURCE=postgres://root:secret@database:5432/omnibank?sslmode=disable
+    ports:
+      - "8080:8080"
